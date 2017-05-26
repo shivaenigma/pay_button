@@ -1,0 +1,68 @@
+#blockoPayModal .modal-content {
+	background: #f4f4f4;
+}
+
+#blockoPayModal .modal-header {
+	text-align: center;
+	border: none;
+}
+
+#blockoPayModal .modal-header h4 {
+	padding: 30px 15px 0;
+	font-size: 15px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+#blockoPayModal .modal-header small {
+	display: block;
+	margin: 3px 0 6px;
+}
+
+#blockoPayModal .modal-body {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+#blockoPayModal .modal-footer {
+	padding-bottom: 30px;
+	text-align: center;
+	border: none;
+}
+
+.form-group.centered {
+	margin-top: 30px;
+	text-align: center;
+}
+
+.btn {
+	font-weight: bold;
+}
+
+#blockoPayBtnResponse {
+	display: none;
+}
+
+.help-block.error.text-danger {
+	color: #a94442;
+}
+
+.form-group.error .form-control {
+	border-color: #a94442;
+}
+
+#blockoPayBtnResponse {
+	text-align: center;
+}
+
+#blockoPayBtnQrCode canvas {
+	width: 100%;
+	max-width: 100%;
+	margin: 0 0 6px;
+}
+
+#blockoPayBtnNumber {
+	color: green;
+	font-weight: bold;
+	margin: 6px 0 15px;
+}

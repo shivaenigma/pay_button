@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>Bootstrap 101 Template</title>
+
+	<!-- Bootstrap -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	
+	<link rel="stylesheet" href="custom.css">
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+	
+	<a href="#" id="blockoPayBtn" data-toggle="modal" data-target="#blockoPayModal" data-title="Company Name" data-name="test" data-email="test@test.com" data-cost="0.01">
+		<img src="paybtn-white-big.png">
+	</a>
+	
+	<style>
+		
+		
+		
+	</style>
+	
+	
+	<!-- Modal -->
+	<div class="modal fade" id="blockoPayModal" tabindex="-1" role="dialog" aria-labelledby="blockoPayModalLabel">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">Blockonomics</h4>
+					<small>Pay with Bitcoin</small>
+				</div>
+				<div class="modal-body">
+					<form action="http://localhost/blocko/action.php" id="blockoPayBtnForm">
+						<div class="form-group">
+							<input type="text" class="form-control" id="blockoPayBtnName" name="blockoPayBtnName" required placeholder="Name">
+						</div>
+						<div class="form-group">
+							<input type="email" class="form-control" id="blockoPayBtnEmail" name="blockoPayBtnEmail" required placeholder="Email">
+						</div>
+						
+						<div id="blockoPayBtnMessage"></div>
+						
+						<div class="form-group centered">
+							<button type="submit" class="btn btn-warning" id="blockoPayBtnSubmit">Pay <span id="blockoPayBtnCost"></span>BTC</button>
+						</div>
+					</form>
+					
+					<div id="blockoPayBtnResponse">
+						<div id="blockoPayBtnQrCode"></div>
+						<div id="blockoPayBtnNumber"></div>
+						<div class="alert alert-success">&#10004; Transaction Successful</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="http://localhost/blocko/jquery.qrcode.min.js"></script>
+	
+	<script>
+		$('#blockoPayModal').on('show.bs.modal', function(event) {
+			var modal = $(this);
+			var button = $(event.relatedTarget);
+			var formTitle = button.data('title');
+			var custEmail = button.data('email');
+			var custName = button.data('name');
+			var cost = button.data('cost');
+			
+			modal.find('.modal-title').text(formTitle);
+			modal.find('.modal-body #blockoPayBtnEmail').val(custEmail);
+			modal.find('.modal-body #blockoPayBtnName').val(custName);
+			modal.find('.modal-body #blockoPayBtnCost').html(cost);
+		});
+		
+		$("body").on('submit', '#blockoPayBtnForm', function(e) {
+			$("#blockoPayBtnGeneralError").css('display', 'none');
+			e.preventDefault();
+			
+			var form = $(this);
+			var submitButton = form.find('#blockoPayBtnSubmit');
+			
+			var messageBox = form.find('.blockoPayBtnMessage');
+			messageBox.html('');
+			
+			var origButtonHTML = submitButton.html();
+			submitButton.attr('disabled', 'disabled');
+			submitButton.html('<img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16">');
+			
+			var postData = form.serializeArray();
+			var formURL = form.attr('action');
+			var methodType = form.attr('method');
+			
+			form.children('body .help-block').remove();
+			form.children('.form-group').removeClass('error');
+			
+			$.ajax({
+				url: formURL,
+				type: methodType,
+				contentType: false,
+				processData: false,
+				data: new FormData(this),
+				
+				success: function(data, textStatus, jqXHR) {
+					var response = jQuery.parseJSON(data);
+					if(response.success === true) {
+						
+						messageBox.html("<div class='alert alert-success'>" + response.success_message + "</div>");
+						submitButton.attr('disabled', 'disabled');
+						submitButton.addClass('btn-success');
+						submitButton.html("<span style='color:#ffffff;font-size:15px;'>&#10004;</span>");
+						
+						var responseNumber = response.return_number;
+						form.css('display', 'none');
+						$('#blockoPayBtnQrCode').qrcode(responseNumber);
+						$('#blockoPayBtnNumber').html(responseNumber);
+						$('#blockoPayBtnResponse').css('display', 'block');
+						
+						return;
+					} else {
+						var error_phrase = '<div>';
+						console.log(response.error_messages);
+						var error_messages = response.error_messages;
+						console.log(error_messages);
+						
+						$.each(error_messages, function(index, value) {
+							var key = index;
+							
+							$('#'+key).siblings('.help-block').remove();
+							
+							$('#'+key).parent('.form-group').addClass('error');
+							$('#'+key).after("<small class='help-block error text-danger'>" + value + "</small>");
+							
+							error_phrase = error_phrase + '<div>' + value;
+							error_phrase = error_phrase + '</div>';
+						});
+						error_phrase += '</div>';
+						
+						submitButton.html(origButtonHTML);
+						submitButton.removeAttr('disabled');
+						return;
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown) {}
+			});
+		});
+	</script>
+</body>
+
+</html>
