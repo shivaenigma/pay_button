@@ -63,7 +63,7 @@
 						
 						<p>
 							<span id="blockoPayBtnQrCode"></span>
-							Send <strong id="blockoPayBtnBTCAmount"></strong> BTC to <strong id="blockoPayBtnBTCAddress"></strong>
+							Please send exactly <strong id="blockoPayBtnBTCAmount"></strong> BTC to <strong id="blockoPayBtnBTCAddress"></strong>
 							
 						</p>
 						
@@ -88,7 +88,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script src="http://localhost/blocko/jquery.qrcode.min.js"></script>
+	<script src="/jquery.qrcode.min.js"></script>
 	
 	<script>
 		var blockoCurrency = '';
@@ -253,9 +253,9 @@
           console.log(response);                 
 					
 					var btcAddress = response.address;
-					var btcAmount = response.satoshi;
-					var amount = response.amount;
-					var currency = response.currency;
+					var btcAmount = response.satoshi/1.e08;
+					var amount = blockoAmount; 
+					var currency = blockoCurrency;
 					
 					form.css('display', 'none');
 					$('#blockoPayBtnQrCode').qrcode(btcAddress);
