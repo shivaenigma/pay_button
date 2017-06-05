@@ -24,8 +24,8 @@
 
 <body>
 	
-	<a href="#" id="blockoPayBtn" data-toggle="modal" data-target="#blockoPayModal" data-title="Company Name" data-name="test" data-email="test@test.com" data-cost="0.01">
-		<img src="paybtn-white-big.png">
+	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="71b79fd246ee11e7">
+		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
 	<style>
@@ -42,10 +42,9 @@
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel">Blockonomics</h4>
-					<small>Pay with Bitcoin</small>
 				</div>
 				<div class="modal-body">
-					<form action="http://localhost/blocko/action.php" id="blockoPayBtnForm">
+					<form action="http://localhost:8080/merchant_order/" id="blockoPayBtnForm">
 						<div class="form-group">
 							<input type="text" class="form-control" id="blockoPayBtnName" name="blockoPayBtnName" required placeholder="Name">
 						</div>
@@ -61,9 +60,22 @@
 					</form>
 					
 					<div id="blockoPayBtnResponse">
-						<div id="blockoPayBtnQrCode"></div>
-						<div id="blockoPayBtnNumber"></div>
-						<div class="alert alert-success">&#10004; Transaction Successful</div>
+						
+						<p>
+							<span id="blockoPayBtnQrCode"></span>
+							Send <strong id="blockoPayBtnBTCAmount"></strong> BTC to <strong id="blockoPayBtnBTCAddress"></strong>
+							
+						</p>
+						
+						<div class="ticker clearfix">
+							<div class="time-container"><span id="minutes-num-container" class="time-num">--</span> <span id="minutes-text-container" class="time-text">minutes</span></div>
+							<div class="time-container"><span id="seconds-num-container" class="time-num">--</span> <span id="seconds-text-container" class="time-text">seconds</span></div>
+							<div id="expired"></div>
+							<div class="time-progress"><div id="prog" class="prog"></div></div>
+						</div>
+						
+						<div id="btcConversion"><span id="blockoPayBtnCurAmount"></span> &lt;-&gt; <span id="blockoPayBtnBTCEqui"></span> BTC</div>
+						
 					</div>
 					
 				</div>
@@ -79,18 +91,110 @@
 	<script src="http://localhost/blocko/jquery.qrcode.min.js"></script>
 	
 	<script>
-		$('#blockoPayModal').on('show.bs.modal', function(event) {
-			var modal = $(this);
-			var button = $(event.relatedTarget);
-			var formTitle = button.data('title');
-			var custEmail = button.data('email');
-			var custName = button.data('name');
-			var cost = button.data('cost');
+		var blockoCurrency = '';
+		var blockoAmount = 0;
+		var blockBtcAmount = 0;
+		var startTime = '';
+		var paymentMinutes = 10;
+	  var uid= '';	
+		var blockoURL = "http://localhost:8080/api/button";
+		var blockoActionURL = "http://localhost:8080/merchant_order/";
+		var blockoFieldsMaster = {
+			'0': {
+				'id': 'blockoPayBtnnmail',
+				'name': 'email',
+				'label': 'Email',
+				'type': 'email',
+			},
+			'1': {
+				'id': 'blockoPayBtnname',
+				'name': 'name',
+				'label': 'Name',
+				'type': 'text',
+			},
+			'2': {
+				'id': 'blockoPayBtnaddress',
+				'name': 'address',
+				'label': 'Address',
+				'type': 'textarea',
+			}
+		};
+		
+		$("body").on("click", "#blockoPayBtn", function(e) {
+			e.preventDefault();
+			var button = $(this);
+			uid = button.data('uid').trim();
+			if(uid == '') {
+				alert("Error! Invalid Pay-button configuration. UID missing.");
+			}
 			
-			modal.find('.modal-title').text(formTitle);
-			modal.find('.modal-body #blockoPayBtnEmail').val(custEmail);
-			modal.find('.modal-body #blockoPayBtnName').val(custName);
-			modal.find('.modal-body #blockoPayBtnCost').html(cost);
+			$.ajax({
+				url: blockoURL,
+				data: {"uid": uid},
+				type: 'GET',
+				crossDomain: true,
+				timeout: 10000,
+				dataType: 'text',
+				
+				success : function(data){
+					var response = jQuery.parseJSON(data);
+					
+					var productCode         = response.code;
+					var productName         = response.code;
+					var productDescription  = response.description;
+					var fieldsMask          = response.fields_mask;
+					var currency            = response.currency;
+					var cost                = response.value;
+					var uid                 = response.uid;
+					
+					blockoCurrency = currency;
+					blockoAmount = cost;
+					
+					var finalFields = [(fieldsMask&1)>0, (fieldsMask&2)>0, (fieldsMask&4)>0];
+					var finalFields = [];
+					
+					var n = 0;
+					for(i = 0; i < Object.keys(blockoFieldsMaster).length; i++) {
+						if(fieldsMask&(Math.pow(2, i))) {
+							finalFields.push(blockoFieldsMaster[i]);
+						}
+					};
+					
+					var form = $("#blockoPayBtnForm");
+					var responseArea = $("#blockoPayBtnResponse");
+					
+					if(finalFields.length == 0) {
+						form.css('display', 'none');
+						responseArea.css('display', 'block');
+						return;
+					}
+					
+					form.html('');
+					
+					$.each(finalFields, function(index, value) {
+						if(value['type'] != 'textarea') {
+							form.append("<div class='form-group'><input type='" + value['type'] + "' class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></div>");
+						} else {
+							form.append("<div class='form-group'><textarea class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></textarea>");
+						}
+					});
+					
+					form.append("<div class='form-group centered'><button type='submit' class='btn btn-warning' id='blockoPayBtnSubmit'>Pay <span id='blockoPayBtnCost'>" + cost + "</span> " + currency + "</button></div>");
+					
+					formAction = blockoActionURL + uid;
+					form.attr('action', formAction);
+					
+					var blockoModal = $("#blockoPayModal");
+					blockoModal.find('.modal-title').html('');
+					blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
+					
+					blockoModal.modal('show');
+				
+				}, error : function(httpReq,status,exception) {
+					
+				}
+			});
+			
 		});
 		
 		$("body").on('submit', '#blockoPayBtnForm', function(e) {
@@ -108,62 +212,131 @@
 			submitButton.html('<img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16">');
 			
 			var postData = form.serializeArray();
-			var formURL = form.attr('action');
-			var methodType = form.attr('method');
+			var error = 0;
+			$.each(postData, function(index, value) {
+				var name = value['name'];
+				var value = value['value'].trim();
+				var id = form.find('[name="'+name+'"]').attr('id');
+				$('#'+id).siblings('.help-block').remove();
+				$('#'+id).parent('.form-group').removeClass('error');
+				
+				if( ( ! value) || (value == '') ) {
+					error = 1;
+					$('#'+id).parent('.form-group').addClass('error');
+					$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid input' + "</small>");
+				}
+				
+				if( name == 'email' && (validateEmail(value) == false) ) {
+					error = 1;
+					$('#'+id).parent('.form-group').addClass('error');
+					$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid email' + "</small>");
+				}
+			});
 			
-			form.children('body .help-block').remove();
-			form.children('.form-group').removeClass('error');
+			if(error == 1) {
+				submitButton.html(origButtonHTML);
+				submitButton.removeAttr('disabled');
+				return;
+			}
+				
+			var formURL = form.attr('action');
+			var methodType = 'POST';
 			
 			$.ajax({
-				url: formURL,
+				url: 'http://localhost:8080/api/merchant_order/' + uid,
 				type: methodType,
 				contentType: false,
 				processData: false,
-				data: new FormData(this),
+        data: '{}',
 				
-				success: function(data, textStatus, jqXHR) {
-					var response = jQuery.parseJSON(data);
+				success: function(response, textStatus, jqXHR) {
+          console.log(response);                 
+					
+					var btcAddress = response.address;
+					var btcAmount = response.satoshi;
+					var amount = response.amount;
+					var currency = response.currency;
+					
+					form.css('display', 'none');
+					$('#blockoPayBtnQrCode').qrcode(btcAddress);
+					
+					$('#blockoPayBtnCurAmount').html(amount + ' ' + currency);
+					$('#blockoPayBtnBTCEqui').html(btcAmount);
+					$('#blockoPayBtnBTCAmount').html(btcAmount);
+					$('#blockoPayBtnBTCAddress').html(btcAddress);
+					
+					var minutes = paymentMinutes;
+					now = new Date();
+					startTime = now;
+					deadline = now.getTime() + minutes*60000;
+					CountDownTimer(deadline, 'newcountdown');
+					$('#blockoPayBtnResponse').css('display', 'block');
+					
 					if(response.success === true) {
 						
-						messageBox.html("<div class='alert alert-success'>" + response.success_message + "</div>");
-						submitButton.attr('disabled', 'disabled');
-						submitButton.addClass('btn-success');
-						submitButton.html("<span style='color:#ffffff;font-size:15px;'>&#10004;</span>");
-						
-						var responseNumber = response.return_number;
-						form.css('display', 'none');
-						$('#blockoPayBtnQrCode').qrcode(responseNumber);
-						$('#blockoPayBtnNumber').html(responseNumber);
-						$('#blockoPayBtnResponse').css('display', 'block');
-						
+						var btcAddress = response.btc_address;
+						var btcAmount = response.btc_address;
 						return;
 					} else {
-						var error_phrase = '<div>';
-						console.log(response.error_messages);
-						var error_messages = response.error_messages;
-						console.log(error_messages);
 						
-						$.each(error_messages, function(index, value) {
-							var key = index;
-							
-							$('#'+key).siblings('.help-block').remove();
-							
-							$('#'+key).parent('.form-group').addClass('error');
-							$('#'+key).after("<small class='help-block error text-danger'>" + value + "</small>");
-							
-							error_phrase = error_phrase + '<div>' + value;
-							error_phrase = error_phrase + '</div>';
-						});
-						error_phrase += '</div>';
-						
-						submitButton.html(origButtonHTML);
-						submitButton.removeAttr('disabled');
 						return;
 					}
 				},
 				error: function(jqXHR, textStatus, errorThrown) {}
 			});
 		});
+		
+		function CountDownTimer(dt, id) {
+			var end = new Date(dt);
+			var _second = 1000;
+			var _minute = _second * 60;
+			var _hour = _minute * 60;
+			var _day = _hour * 24;
+			var timer;
+			
+			function showRemaining() {
+				var now = new Date();
+				var distance = end - now;
+				if (distance < 0) {
+					clearInterval(timer);
+					$(".time-container").remove();
+					$("#prog").remove();
+					document.getElementById("expired").innerHTML = '<div class="alert alert-danger">Sorry! This payment window has expired.</div>';
+					return;
+				}
+				var days = Math.floor(distance / _day);
+				var hours = Math.floor((distance % _day) / _hour);
+				var minutes = Math.floor((distance % _hour) / _minute);
+				var seconds = Math.floor((distance % _minute) / _second);
+				
+				minutes = minutes > 9 ? "" + minutes: "0" + minutes;
+				seconds = seconds > 9 ? "" + seconds: "0" + seconds;
+				
+				var base_date = startTime;
+				var total_distance = end - base_date;
+				var passed_distance = now - base_date;
+				
+				var time_percent = (passed_distance/total_distance) * 100;
+				
+				document.getElementById('minutes-num-container').innerHTML = minutes;
+				document.getElementById('minutes-text-container').innerHTML = 'minutes';
+				
+				document.getElementById('seconds-num-container').innerHTML = seconds;
+				document.getElementById('seconds-text-container').innerHTML = 'seconds';
+				
+				document.getElementById("prog").style.width = time_percent+"%";
+				
+			}
+
+			timer = setInterval(showRemaining, 1000);
+		}
+		
+	</script>
+	<script>
+		function validateEmail(email) {
+			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			return re.test(email);
+		}
 	</script>
 </body>
 

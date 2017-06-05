@@ -1,3 +1,8 @@
+#blockoPayModal .modal-dialog {
+	max-width: 300px;
+	margin: 15px auto;
+}
+
 #blockoPayModal .modal-content {
 	background: #f4f4f4;
 }
@@ -5,6 +10,7 @@
 #blockoPayModal .modal-header {
 	text-align: center;
 	border: none;
+	padding-bottom: 7px;
 }
 
 #blockoPayModal .modal-header h4 {
@@ -12,6 +18,14 @@
 	font-size: 15px;
 	font-weight: bold;
 	text-transform: uppercase;
+	margin: 0 0 15px;
+}
+
+#blockoPayModal .modal-header h4 small {
+	display: block;
+	text-transform: none;
+	font-size: 14px;
+	margin: 6px 0 0;
 }
 
 #blockoPayModal .modal-header small {
@@ -20,6 +34,7 @@
 }
 
 #blockoPayModal .modal-body {
+	padding-top: 0px;
 	padding-left: 30px;
 	padding-right: 30px;
 }
@@ -30,12 +45,12 @@
 	border: none;
 }
 
-.form-group.centered {
+#blockoPayModal .form-group.centered {
 	margin-top: 30px;
 	text-align: center;
 }
 
-.btn {
+#blockoPayModal .btn {
 	font-weight: bold;
 }
 
@@ -43,11 +58,11 @@
 	display: none;
 }
 
-.help-block.error.text-danger {
+#blockoPayModal .help-block.error.text-danger {
 	color: #a94442;
 }
 
-.form-group.error .form-control {
+#blockoPayModal .form-group.error .form-control {
 	border-color: #a94442;
 }
 
@@ -55,14 +70,89 @@
 	text-align: center;
 }
 
+#blockoPayBtnQrCode {
+	display: block;
+	width: 75px;
+	margin: 0 auto 9px;
+	border: 1px solid #888888;
+	padding: 6px 6px 1px;
+	background: #ffffff;
+}
+
+#blockoPayBtnBTCAmount {
+	color: #09CA83;
+	font-size: 21px;
+}
+
+#blockoPayModal #btcConversion {
+	display: block;
+	font-size: 12px;
+	margin: 0;
+	color: #888888;
+	padding: 15px 0 0;
+	border-top: 1px solid #dadada;
+}
+
 #blockoPayBtnQrCode canvas {
 	width: 100%;
 	max-width: 100%;
-	margin: 0 0 6px;
+	margin: 0;
 }
 
 #blockoPayBtnNumber {
 	color: green;
 	font-weight: bold;
 	margin: 6px 0 15px;
+}
+
+#blockoPayModal textarea {
+	max-width: 100%;
+	min-width: 100%;
+	min-height: 100px;
+}
+
+#blockoPayModal .ticker {
+	display: block;
+	max-width: 120px;
+	margin: 0 auto 15px;
+}
+
+#blockoPayModal .ticker .time-container {
+	display: block;
+	float: left;
+	width: 50%;
+	text-align: center;
+}
+
+#blockoPayModal .ticker .time-container .time-num {
+	font-size: 21px;
+	font-weight: bold;
+	display: block;
+}
+
+#blockoPayModal .ticker .time-container .time-text {
+	font-size: 12px;
+	font-weight: normal;
+	display: block;
+}
+
+#blockoPayModal .ticker .time-progress {
+	display: block;
+	margin: 9px 0;
+	width: 100%;
+	float: left;
+	height: 9px;
+	border-radius: 3px;
+	background: #dadada;
+	position: relative;
+}
+
+#blockoPayModal .ticker .time-progress .prog {
+	display: block;
+	position: absolute;
+	left: 0;
+	height: 9px;
+	top: 0;
+	background: #09CA83;
+	border-radius: 3px;
 }
