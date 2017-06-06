@@ -58,6 +58,35 @@
 	display: none;
 }
 
+#blockoPayBtnSuccess {
+	display: block;
+	text-align: center;
+}
+
+#blockoPayBtnSuccess .message {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	margin: 0 0 15px;
+}
+
+#blockoPayBtnSuccess #blockoPayBtnTick {
+	display: block;
+	width: 45px;
+	height: 45px;
+	text-align: center;
+	margin: 0 auto 15px;
+	background: #66C300;
+	color: #ffffff;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-o-border-radius: 50%;
+	-ms-border-radius: 50%;
+	font-size: 24px;
+	padding-top: 7px;
+}
+
 #blockoPayModal .help-block.error.text-danger {
 	color: #a94442;
 }
@@ -72,7 +101,7 @@
 
 #blockoPayBtnQrCode {
 	display: block;
-	width: 75px;
+	width: 150px;
 	margin: 0 auto 9px;
 	border: 1px solid #888888;
 	padding: 6px 6px 1px;
@@ -80,8 +109,16 @@
 }
 
 #blockoPayBtnBTCAmount {
-	color: #09CA83;
-	font-size: 21px;
+	color: #059e66;
+	font-weight: normal;
+}
+
+#blockoPayBtnBTCAddress {
+	display: block;
+	color: #059e66;
+	font-weight: normal;
+	font-size: 13px;
+	margin: 0 -15px;
 }
 
 #blockoPayModal #btcConversion {

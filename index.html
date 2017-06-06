@@ -24,7 +24,7 @@
 
 <body>
 	
-	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="71b79fd246ee11e7">
+	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
@@ -63,7 +63,7 @@
 						
 						<p>
 							<span id="blockoPayBtnQrCode"></span>
-							Please send exactly <strong id="blockoPayBtnBTCAmount"></strong> BTC to <strong id="blockoPayBtnBTCAddress"></strong>
+							Send exactly <strong id="blockoPayBtnBTCAmount"></strong> to <strong id="blockoPayBtnBTCAddress"></strong>
 							
 						</p>
 						
@@ -78,16 +78,27 @@
 						
 					</div>
 					
+					<div id="blockoPayBtnSuccess">
+						
+						<p class="message">
+							<span id="blockoPayBtnTick">&#10004;</span>
+							Payment Done.							
+						</p>
+						
+						<p>Thank you, your order has been received.</p>
+						
+					</div>
+					
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	<script src="/jquery.qrcode.min.js"></script>
 	
 	<script>
@@ -96,7 +107,8 @@
 		var blockBtcAmount = 0;
 		var startTime = '';
 		var paymentMinutes = 10;
-	  var uid= '';	
+		var uid= '';	
+		var timer;
 		var blockoURL = "http://localhost:8080/api/button";
 		var blockoActionURL = "http://localhost:8080/merchant_order/";
 		var blockoFieldsMaster = {
@@ -127,6 +139,18 @@
 			if(uid == '') {
 				alert("Error! Invalid Pay-button configuration. UID missing.");
 			}
+			
+			$('#blockoPayBtnForm').html('');
+			$('#blockoPayBtnForm').css('display', 'block');
+			
+			$('#blockoPayBtnQrCode').html('');
+			$('#blockoPayBtnBTCAmount').html('');
+			$('#blockoPayBtnBTCAddress').html('');
+			$('#seconds-num-container, #minutes-num-container').html('--');
+			$('#prog').css('width', 0);
+			clearTimeout(timer);
+			$('#blockoPayBtnResponse').css('display','none');
+			$('#blockoPayBtnSuccess').css('display','none');
 			
 			$.ajax({
 				url: blockoURL,
@@ -247,10 +271,10 @@
 				type: methodType,
 				contentType: false,
 				processData: false,
-        data: '{}',
+				data: '{}',
 				
 				success: function(response, textStatus, jqXHR) {
-          console.log(response);                 
+					console.log(response);                 
 					
 					var btcAddress = response.address;
 					var btcAmount = response.satoshi/1.e08;
@@ -262,7 +286,7 @@
 					
 					$('#blockoPayBtnCurAmount').html(amount + ' ' + currency);
 					$('#blockoPayBtnBTCEqui').html(btcAmount);
-					$('#blockoPayBtnBTCAmount').html(btcAmount);
+					$('#blockoPayBtnBTCAmount').html(btcAmount + 'BTC');
 					$('#blockoPayBtnBTCAddress').html(btcAddress);
 					
 					var minutes = paymentMinutes;
@@ -292,7 +316,6 @@
 			var _minute = _second * 60;
 			var _hour = _minute * 60;
 			var _day = _hour * 24;
-			var timer;
 			
 			function showRemaining() {
 				var now = new Date();
@@ -316,7 +339,11 @@
 				var total_distance = end - base_date;
 				var passed_distance = now - base_date;
 				
-				var time_percent = (passed_distance/total_distance) * 100;
+				var time_percent = 100 - ((passed_distance/total_distance) * 100);
+				
+				if(time_percent <= 99) {
+					blockoPayBtnShowSuccess();
+				}
 				
 				document.getElementById('minutes-num-container').innerHTML = minutes;
 				document.getElementById('minutes-text-container').innerHTML = 'minutes';
@@ -329,6 +356,14 @@
 			}
 
 			timer = setInterval(showRemaining, 1000);
+			
+		}
+		
+		function blockoPayBtnShowSuccess() {
+			$('#blockoPayBtnForm').css('display', 'none');
+			clearTimeout(timer);
+			$('#blockoPayBtnResponse').css('display','none');
+			$('#blockoPayBtnSuccess').css('display','block');
 		}
 		
 	</script>
