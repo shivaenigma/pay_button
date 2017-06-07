@@ -311,10 +311,6 @@
 		
 		function CountDownTimer(dt, id) {
 			var end = new Date(dt);
-			var _second = 1000;
-			var _minute = _second * 60;
-			var _hour = _minute * 60;
-			var _day = _hour * 24;
 			
 			function showRemaining() {
 				var now = new Date();
@@ -326,13 +322,10 @@
 					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Sorry! This payment window has expired.</div>';
 					return;
 				}
-				var days = Math.floor(distance / _day);
-				var hours = Math.floor((distance % _day) / _hour);
-				var minutes = Math.floor((distance % _hour) / _minute);
-				var seconds = Math.floor((distance % _minute) / _second);
 				
-				minutes = minutes > 9 ? "" + minutes: "0" + minutes;
-				seconds = seconds > 9 ? "" + seconds: "0" + seconds;
+				minutes =  Math.floor((distance/1000)/60);
+        seconds =  Math.floor(distance/1000)%60;
+        seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
 				
 				var base_date = startTime;
 				var total_distance = end - base_date;
