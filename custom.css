@@ -154,24 +154,6 @@
 	margin: 0 auto 15px;
 }
 
-#blockoPayModal .ticker .time-container {
-	display: block;
-	float: left;
-	width: 50%;
-	text-align: center;
-}
-
-#blockoPayModal .ticker .time-container .time-num {
-	font-size: 21px;
-	font-weight: bold;
-	display: block;
-}
-
-#blockoPayModal .ticker .time-container .time-text {
-	font-size: 12px;
-	font-weight: normal;
-	display: block;
-}
 
 #blockoPayModal .ticker .time-progress {
 	display: block;

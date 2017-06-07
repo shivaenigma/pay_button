@@ -69,9 +69,7 @@
 						</p>
 						
 						<div class="ticker clearfix">
-							<div class="time-container"><span id="minutes-num-container" class="time-num">--</span> <span id="minutes-text-container" class="time-text">minutes</span></div>
-							<div class="time-container"><span id="seconds-num-container" class="time-num">--</span> <span id="seconds-text-container" class="time-text">seconds</span></div>
-							<div id="expired"></div>
+							<div id="timeRemainingText"></div>
 							<div class="time-progress"><div id="prog" class="prog"></div></div>
 						</div>
 						
@@ -325,7 +323,7 @@
 					clearInterval(timer);
 					$(".time-container").remove();
 					$("#prog").remove();
-					document.getElementById("expired").innerHTML = '<div class="alert alert-danger">Sorry! This payment window has expired.</div>';
+					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Sorry! This payment window has expired.</div>';
 					return;
 				}
 				var days = Math.floor(distance / _day);
@@ -342,12 +340,7 @@
 				
 				var time_percent = 100 - ((passed_distance/total_distance) * 100);
 				
-				document.getElementById('minutes-num-container').innerHTML = minutes;
-				document.getElementById('minutes-text-container').innerHTML = 'minutes';
-				
-				document.getElementById('seconds-num-container').innerHTML = seconds;
-				document.getElementById('seconds-text-container').innerHTML = 'seconds';
-				
+				document.getElementById('timeRemainingText').innerHTML = minutes + ":" + seconds;
 				document.getElementById("prog").style.width = time_percent+"%";
 				
 			}
