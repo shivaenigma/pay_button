@@ -61,7 +61,7 @@
 					
 					<div id="blockoPayBtnResponse">
 						
-						<p>
+						<p id="blockoPaySection"> 
 							<a id="blockoPayBtnQrCode"></a>
               To pay send exactly</br> <strong
                 id="blockoPayBtnBTCAmount"></strong> to <strong id="blockoPayBtnBTCAddress"></strong>
@@ -272,7 +272,6 @@
 				data: '{}',
 				
 				success: function(response, textStatus, jqXHR) {
-					console.log(response);                 
 					
 					var btcAddress = response.address;
 					var btcAmount = response.satoshi/1.e08;
@@ -295,14 +294,9 @@
 					CountDownTimer(deadline, 'newcountdown');
 					$('#blockoPayBtnResponse').css('display', 'block');
 					
-					if(response.success === true) {
-						
-						var btcAddress = response.btc_address;
-						var btcAmount = response.btc_address;
-						return;
-					} else {
-						
-						return;
+					var ws = new WebSocket("ws://localhost:8080/payment/" + btcAddress);
+					ws.onmessage = function (evt) {
+						blockoPayBtnShowSuccess();
 					}
 				},
 				error: function(jqXHR, textStatus, errorThrown) {}
@@ -319,7 +313,8 @@
 					clearInterval(timer);
 					$(".time-container").remove();
 					$("#prog").remove();
-					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Sorry! This payment window has expired.</div>';
+          $("#blockoPaySection").remove();
+					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Payment window expired!  Close this window and try again </div>';
 					return;
 				}
 				
@@ -344,7 +339,7 @@
 		
 		function blockoPayBtnShowSuccess() {
 			$('#blockoPayBtnForm').css('display', 'none');
-			clearTimeout(timer);
+			clearInterval(timer);
 			$('#blockoPayBtnResponse').css('display','none');
 			$('#blockoPayBtnSuccess').css('display','block');
 		}
