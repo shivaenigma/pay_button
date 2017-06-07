@@ -24,7 +24,7 @@
 
 <body>
 	
-	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
+	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="71b79fd246ee11e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
@@ -62,8 +62,9 @@
 					<div id="blockoPayBtnResponse">
 						
 						<p>
-							<span id="blockoPayBtnQrCode"></span>
-							Send exactly <strong id="blockoPayBtnBTCAmount"></strong> to <strong id="blockoPayBtnBTCAddress"></strong>
+							<a id="blockoPayBtnQrCode"></a>
+              To pay send exactly</br> <strong
+                id="blockoPayBtnBTCAmount"></strong> to <strong id="blockoPayBtnBTCAddress"></strong>
 							
 						</p>
 						
@@ -82,7 +83,6 @@
 						
 						<p class="message">
 							<span id="blockoPayBtnTick">&#10004;</span>
-							Payment Done.							
 						</p>
 						
 						<p>Thank you, your order has been received.</p>
@@ -282,11 +282,12 @@
 					var currency = blockoCurrency;
 					
 					form.css('display', 'none');
-					$('#blockoPayBtnQrCode').qrcode(btcAddress);
+					$('#blockoPayBtnQrCode').qrcode("bitcoin:" + btcAddress +"?amount="+btcAmount);
+					$('#blockoPayBtnQrCode').attr("href", "bitcoin:" + btcAddress +"?amount="+btcAmount);
 					
 					$('#blockoPayBtnCurAmount').html(amount + ' ' + currency);
 					$('#blockoPayBtnBTCEqui').html(btcAmount);
-					$('#blockoPayBtnBTCAmount').html(btcAmount + 'BTC');
+					$('#blockoPayBtnBTCAmount').html(btcAmount + ' BTC');
 					$('#blockoPayBtnBTCAddress').html(btcAddress);
 					
 					var minutes = paymentMinutes;
@@ -340,10 +341,6 @@
 				var passed_distance = now - base_date;
 				
 				var time_percent = 100 - ((passed_distance/total_distance) * 100);
-				
-				if(time_percent <= 99) {
-					blockoPayBtnShowSuccess();
-				}
 				
 				document.getElementById('minutes-num-container').innerHTML = minutes;
 				document.getElementById('minutes-text-container').innerHTML = 'minutes';
