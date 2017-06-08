@@ -116,9 +116,9 @@
 #blockoPayBtnBTCAddress {
 	display: block;
 	font-weight: normal;
-	color: #059e66;
-	font-size: 13px;
-	margin: 0 -15px;
+	color: #333;
+	font-size: 12px;
+	margin: 6px 0;
 }
 
 #blockoPayModal #btcConversion {
@@ -174,4 +174,15 @@
 	top: 0;
 	background: #09CA83;
 	border-radius: 3px;
+}
+
+#blockoPayModal .modal-footer {
+	padding: 0 30px 12px;
+}
+
+#blockoPayModal .modal-footer small {
+	font-size: 10px;
+	display: block;
+	text-align: center;
+	color: #888;
 }
