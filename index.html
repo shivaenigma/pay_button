@@ -10,7 +10,7 @@
 
 	<!-- Bootstrap -->
 	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" -->
 	
 	<link rel="stylesheet" href="custom.css">
 
@@ -24,7 +24,11 @@
 
 <body>
 	
-	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="71b79fd246ee11e7">
+	<a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
+		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
+	</a>
+	
+	<a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="fad8a8444d3111e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
@@ -126,7 +130,7 @@
 			}
 		};
 		
-		$("body").on("click", "#blockoPayBtn", function(e) {
+		$("body").on("click", ".blockoPayBtn", function(e) {
 			e.preventDefault();
 			var button = $(this);
 			uid = button.data('uid').trim();
