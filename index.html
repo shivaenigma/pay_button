@@ -24,7 +24,7 @@
 
 <body>
 	
-	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
+	<a href="#" id="blockoPayBtn" data-toggle="modal" data-uid="71b79fd246ee11e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
@@ -167,7 +167,7 @@
 					var response = jQuery.parseJSON(data);
 					
 					var productCode         = response.code;
-					var productName         = response.code;
+					var productName         = response.name;
 					var productDescription  = response.description;
 					var fieldsMask          = response.fields_mask;
 					var currency            = response.currency;
@@ -177,7 +177,6 @@
 					blockoCurrency = currency;
 					blockoAmount = cost;
 					
-					var finalFields = [(fieldsMask&1)>0, (fieldsMask&2)>0, (fieldsMask&4)>0];
 					var finalFields = [];
 					
 					var n = 0;
@@ -217,7 +216,6 @@
 					
 					
 					
-					blockoModal.find('.modal-title').html('');
 					blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
 					
 					blockoModal.modal('show');
@@ -248,7 +246,6 @@
 				postData = {};
 			}
 			var error = 0;
-			console.log(postData);
 			$.each(postData, function(index, value) {
 				
 				var name = value['name'];
