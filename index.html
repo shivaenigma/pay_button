@@ -115,7 +115,7 @@
 		var blockoFieldsMaster = {
 			'0': {
 				'id': 'blockoPayBtnnmail',
-				'name': 'email',
+				'name': 'emailid',
 				'label': 'Email',
 				'type': 'email',
 			},
@@ -261,10 +261,10 @@
 					$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid input' + "</small>");
 				}
 				
-				if( name == 'email' && (validateEmail(value) == false) ) {
+				if( name == 'emailid' && (validateEmail(value) == false) ) {
 					error = 1;
 					$('#'+id).parent('.form-group').addClass('error');
-					$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid email' + "</small>");
+					$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid emailid' + "</small>");
 				}
 			});
 			
@@ -282,7 +282,7 @@
 				type: methodType,
 				contentType: false,
 				processData: false,
-				data: '{}',
+				data: JSON.stringify(objectifyForm(postData)),
 				
 				success: function(response, textStatus, jqXHR) {
 					
@@ -315,7 +315,16 @@
 				error: function(jqXHR, textStatus, errorThrown) {}
 			});
 		});
-		
+
+    function objectifyForm(formArray) {
+      //serialize data function
+      var returnArray = {};
+      for (var i = 0; i < formArray.length; i++){
+      returnArray[formArray[i]['name']] = formArray[i]['value'];
+      }
+      return returnArray;
+    } 
+
 		function CountDownTimer(dt, id) {
 			var end = new Date(dt);
 			
