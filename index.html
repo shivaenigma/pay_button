@@ -48,7 +48,7 @@
 					<h4 class="modal-title" id="myModalLabel">Blockonomics</h4>
 				</div>
 				<div class="modal-body">
-					<form action='http://localhost:8080/merchant_order/' id="blockoPayBtnForm">
+					<form action='/merchant_order/' id="blockoPayBtnForm">
 						<div class="form-group">
 							<input type="text" class="form-control" id="blockoPayBtnName" name="blockoPayBtnName" required placeholder="Name">
 						</div>
@@ -107,8 +107,8 @@
 		var paymentMinutes = 10;
 		var uid= '';	
 		var timer;
-		var blockoURL = 'http://localhost:8080/api/button';
-		var blockoActionURL = 'http://localhost:8080/merchant_order/';
+		var blockoURL = '/api/button';
+		var blockoActionURL = '/merchant_order/';
 		var blockoFieldsMaster = {
 			'0': {
 				'id': 'blockoPayBtnnmail',
@@ -271,7 +271,7 @@
 			var methodType = 'POST';
 			
 			$.ajax({
-				url: 'http://localhost:8080/api/merchant_order/' + uid,
+				url: '/api/merchant_order/' + uid,
 				type: methodType,
 				contentType: false,
 				processData: false,
