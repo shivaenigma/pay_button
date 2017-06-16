@@ -48,7 +48,7 @@
 					<h4 class="modal-title" id="myModalLabel">Blockonomics</h4>
 				</div>
 				<div class="modal-body">
-					<form action="http://localhost:8080/merchant_order/" id="blockoPayBtnForm">
+					<form action='http://localhost:8080/merchant_order/' id="blockoPayBtnForm">
 						<div class="form-group">
 							<input type="text" class="form-control" id="blockoPayBtnName" name="blockoPayBtnName" required placeholder="Name">
 						</div>
@@ -107,8 +107,8 @@
 		var paymentMinutes = 10;
 		var uid= '';	
 		var timer;
-		var blockoURL = "http://localhost:8080/api/button";
-		var blockoActionURL = "http://localhost:8080/merchant_order/";
+		var blockoURL = 'http://localhost:8080/api/button';
+		var blockoActionURL = 'http://localhost:8080/merchant_order/';
 		var blockoFieldsMaster = {
 			'0': {
 				'id': 'blockoPayBtnnmail',
@@ -299,8 +299,18 @@
 					deadline = now.getTime() + minutes*60000;
 					CountDownTimer(deadline, 'newcountdown');
 					$('#blockoPayBtnResponse').css('display', 'block');
+					function get_ws_url(){
+						var loc = window.location, new_uri;
+						if (loc.protocol === "https:") {
+							new_uri = "wss:";
+						} else {
+							new_uri = "ws:";
+						}
+						new_uri += "//" + loc.host;
+						return new_uri;
+					}
 					
-					var ws = new WebSocket("ws://localhost:8080/payment/" + btcAddress);
+					var ws = new WebSocket(get_ws_url() + "/payment/" + btcAddress);
 					ws.onmessage = function (evt) {
 						blockoPayBtnShowSuccess();
 					}
