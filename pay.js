@@ -2008,7 +2008,7 @@ head.appendChild(style);
 var s = document.createElement("script");
 s.type = "text/javascript";
 s.src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js";
-if(typeof($.fn.modal) === 'undefined') {document.getElementsByTagName('head')[0].appendChild(s);}
+document.getElementsByTagName('head')[0].appendChild(s);
 
 // QRCode JS
 var s = document.createElement("script");
@@ -2078,6 +2078,8 @@ blockoPayBtnHTML += "		<\/div>";
 blockoPayBtnHTML += "	<\/div>";
 blockoPayBtnHTML += "	";
 blockoPayBtnHTML += "	<script>";
+blockoPayBtnHTML += "	var $ = jQuery.noConflict();";
+blockoPayBtnHTML += "	(function( $ ) { $(function() {";
 blockoPayBtnHTML += "		var blockoCurrency = '';";
 blockoPayBtnHTML += "		var blockoAmount = 0;";
 blockoPayBtnHTML += "		var blockBtcAmount = 0;";
@@ -2335,6 +2337,7 @@ blockoPayBtnHTML += "			$('#blockoPayBtnResponse').css('display','none');";
 blockoPayBtnHTML += "			$('#blockoPayBtnSuccess').css('display','block');";
 blockoPayBtnHTML += "		}";
 blockoPayBtnHTML += "		";
+blockoPayBtnHTML += "		}); })($);";
 blockoPayBtnHTML += "	<\/script>";
 
 document.write(blockoPayBtnHTML);
