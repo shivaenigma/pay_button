@@ -103,58 +103,6 @@
 		var $ = jQuery.noConflict();
 		(function($) {
 			$(function() {
-<<<<<<< HEAD
-				var blockoCurrency = '';
-				var blockoAmount = 0;
-				var blockBtcAmount = 0;
-				var startTime = '';
-				var paymentMinutes = 10;
-				var uid= '';	
-				var timer;
-				var blockoURL = '/api/button';
-				var blockoFieldsMaster = {
-					'0': {
-						'id': 'blockoPayBtnnmail',
-						'name': 'emailid',
-						'label': 'Email',
-						'type': 'email',
-					},
-					'1': {
-						'id': 'blockoPayBtnname',
-						'name': 'name',
-						'label': 'Name',
-						'type': 'text',
-					},
-					'2': {
-						'id': 'blockoPayBtnaddress',
-						'name': 'address',
-						'label': 'Address',
-						'type': 'textarea',
-					}
-				};
-				
-				$("body").on("click", ".blockoPayBtn", function(e) {
-					e.preventDefault();
-					var button = $(this);
-					uid = button.data('uid').trim();
-					if(uid == '') {
-						alert("Error! Invalid Pay-button configuration. UID missing.");
-					}
-					
-					$('#blockoPayBtnForm').html('');
-					$('#blockoPayBtnForm').css('display', 'block');
-					
-					$('#blockoPayBtnQrCode').html('');
-					$('#blockoPayBtnBTCAmount').html('');
-					$('#blockoPayBtnBTCAddress').val('');
-					$('#seconds-num-container, #minutes-num-container').html('--');
-					$('#prog').css('width', 0);
-					clearTimeout(timer);
-					$('#blockoPayBtnResponse').css('display','none');
-					$('#blockoPayBtnSuccess').css('display','none');
-					$("#prog").css('display', '');
-					$("#blockoPaySection").css('display', '');
-=======
 			var blockoCurrency = '';
 			var blockoAmount = 0;
 			var blockBtcAmount = 0;
@@ -213,66 +161,10 @@
 					crossDomain: true,
 					timeout: 10000,
 					dataType: 'text',
->>>>>>> parent of a40c657... quantity and phone field options added.
 					
 					success : function(data){
 						var response = jQuery.parseJSON(data);
 						
-<<<<<<< HEAD
-						success : function(data){
-							var response = jQuery.parseJSON(data);
-							
-							var productCode         = response.code;
-							var productName         = response.name;
-							var productDescription  = response.description;
-							var fieldsMask          = response.fields_mask;
-							var currency            = response.currency;
-							var cost                = response.value;
-							var uid                 = response.uid;
-							
-							blockoCurrency = currency;
-							blockoAmount = cost;
-							
-							var finalFields = [];
-							
-							var n = 0;
-							for(i = 0; i < Object.keys(blockoFieldsMaster).length; i++) {
-								if(fieldsMask&(Math.pow(2, i))) {
-									finalFields.push(blockoFieldsMaster[i]);
-								}
-							};
-							
-							var form = $("#blockoPayBtnForm");
-							var responseArea = $("#blockoPayBtnResponse");
-							var blockoModal = $("#blockoPayModal");
-						
-							if(finalFields.length == 0) {
-								form.html('<div style="text-align:center;margin-bottom:15px;"><img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16"></div>');
-								form.submit();
-								blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
-								blockoModal.modal('show');
-								return;
-							}
-							
-							form.html('');
-							
-							$.each(finalFields, function(index, value) {
-								if(value['type'] != 'textarea') {
-									form.append("<div class='form-group'><input type='" + value['type'] + "' class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></div>");
-								} else {
-									form.append("<div class='form-group'><textarea class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></textarea>");
-								}
-							});
-							
-							form.append("<div class='form-group centered'><button type='submit' class='btn btn-warning' id='blockoPayBtnSubmit'>Pay <span id='blockoPayBtnCost'>" + cost + "</span> " + currency + "</button></div>");
-							
-							
-							
-							
-							blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
-							
-							blockoModal.modal('show');
-=======
 						var productCode         = response.code;
 						var productName         = response.name;
 						var productDescription  = response.description;
@@ -292,7 +184,6 @@
 								finalFields.push(blockoFieldsMaster[i]);
 							}
 						};
->>>>>>> parent of a40c657... quantity and phone field options added.
 						
 						var form = $("#blockoPayBtnForm");
 						var responseArea = $("#blockoPayBtnResponse");
@@ -330,17 +221,6 @@
 					}
 				});
 				
-<<<<<<< HEAD
-				$("body").on('submit', '#blockoPayBtnForm', function(e) {
-					$("#blockoPayBtnGeneralError").css('display', 'none');
-					e.preventDefault();
-					
-					var form = $(this);
-					var submitButton = form.find('#blockoPayBtnSubmit');
-					
-					var messageBox = form.find('.blockoPayBtnMessage');
-					messageBox.html('');
-=======
 			});
 			
 			$("body").on('submit', '#blockoPayBtnForm', function(e) {
@@ -385,7 +265,6 @@
 					submitButton.removeAttr('disabled');
 					return;
 				}
->>>>>>> parent of a40c657... quantity and phone field options added.
 					
 				var formURL = form.attr('action');
 				var methodType = 'POST';
@@ -399,36 +278,6 @@
 					
 					success: function(response, textStatus, jqXHR) {
 						
-<<<<<<< HEAD
-						if( ( ! value) || (value == '') ) {
-							error = 1;
-							$('#'+id).parent('.form-group').addClass('error');
-							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid input' + "</small>");
-						}
-						
-						if( name == 'emailid' && (validateEmail(value) == false) ) {
-							error = 1;
-							$('#'+id).parent('.form-group').addClass('error');
-							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid emailid' + "</small>");
-						}
-					});
-					
-					if(error == 1) {
-						submitButton.html(origButtonHTML);
-						submitButton.removeAttr('disabled');
-						return;
-					}
-						
-					var formURL = form.attr('action');
-					var methodType = 'POST';
-					
-					$.ajax({
-						url: '/api/merchant_order/' + uid,
-						type: methodType,
-						contentType: false,
-						processData: false,
-						data: JSON.stringify(objectifyForm(postData)),
-=======
 						var btcAddress = response.address;
 						var btcAmount = response.satoshi/1.e08;
 						var amount = blockoAmount; 
@@ -442,7 +291,6 @@
 						$('#blockoPayBtnBTCEqui').html(btcAmount);
 						$('#blockoPayBtnBTCAmount').html(btcAmount + ' BTC');
 						$('#blockoPayBtnBTCAddress').val(btcAddress);
->>>>>>> parent of a40c657... quantity and phone field options added.
 						
 						var minutes = paymentMinutes;
 						now = new Date();
@@ -469,17 +317,6 @@
 					error: function(jqXHR, textStatus, errorThrown) {}
 				});
 			});
-<<<<<<< HEAD
-		})($);
-
-		function objectifyForm(formArray) {
-			var returnArray = {};
-			for (var i = 0; i < formArray.length; i++){
-				returnArray[formArray[i]['name']] = formArray[i]['value'];
-			}
-			return returnArray;
-		}
-=======
 		});
 	})($);
 
@@ -490,7 +327,6 @@
       }
       return returnArray;
     } 
->>>>>>> parent of a40c657... quantity and phone field options added.
 
 		function CountDownTimer(dt, id) {
 			var end = new Date(dt);
@@ -501,23 +337,14 @@
 				if (distance < 0) {
 					clearInterval(timer);
 					$("#prog").css('display', 'none');
-<<<<<<< HEAD
-					$("#blockoPaySection").css('display', 'none');
-=======
           $("#blockoPaySection").css('display', 'none');
->>>>>>> parent of a40c657... quantity and phone field options added.
 					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Payment window expired!  Close this window and try again </div>';
 					return;
 				}
 				
 				minutes =  Math.floor((distance/1000)/60);
-<<<<<<< HEAD
-				seconds =  Math.floor(distance/1000)%60;
-				seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
-=======
         seconds =  Math.floor(distance/1000)%60;
         seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
->>>>>>> parent of a40c657... quantity and phone field options added.
 				
 				var base_date = startTime;
 				var total_distance = end - base_date;
