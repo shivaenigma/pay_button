@@ -101,37 +101,36 @@
 	
 	<script>
 		var $ = jQuery.noConflict();
+		var blockoCurrency = '';
+		var blockoAmount = 0;
+		var blockBtcAmount = 0;
+		var startTime = '';
+		var paymentMinutes = 10;
+		var uid= '';	
+		var timer;
+		var blockoURL = '/api/button';
+		var blockoFieldsMaster = {
+			'0': {
+				'id': 'blockoPayBtnnmail',
+				'name': 'emailid',
+				'label': 'Email',
+				'type': 'email',
+			},
+			'1': {
+				'id': 'blockoPayBtnname',
+				'name': 'name',
+				'label': 'Name',
+				'type': 'text',
+			},
+			'2': {
+				'id': 'blockoPayBtnaddress',
+				'name': 'address',
+				'label': 'Address',
+				'type': 'textarea',
+			}
+		};
 		(function($) {
 			$(function() {
-				var blockoCurrency = '';
-				var blockoAmount = 0;
-				var blockBtcAmount = 0;
-				var startTime = '';
-				var paymentMinutes = 10;
-				var uid= '';	
-				var timer;
-				var blockoURL = '/api/button';
-				var blockoFieldsMaster = {
-					'0': {
-						'id': 'blockoPayBtnnmail',
-						'name': 'emailid',
-						'label': 'Email',
-						'type': 'email',
-					},
-					'1': {
-						'id': 'blockoPayBtnname',
-						'name': 'name',
-						'label': 'Name',
-						'type': 'text',
-					},
-					'2': {
-						'id': 'blockoPayBtnaddress',
-						'name': 'address',
-						'label': 'Address',
-						'type': 'textarea',
-					}
-				};
-				
 				$("body").on("click", ".blockoPayBtn", function(e) {
 					e.preventDefault();
 					var button = $(this);
