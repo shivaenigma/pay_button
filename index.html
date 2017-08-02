@@ -24,13 +24,16 @@
 
 <body>
 	
-	<a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
+	<!-- a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
 	<a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="fad8a8444d3111e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
-	</a>
+	</a -->
+	
+	<a href="" class="blockoPayBtn" data-toggle="modal" data-uid=9523d6c4761511e7><img width=160 src="http://localhost:8080/img/pay_with_bitcoin_medium.png"></a>
+	<a href="" class="blockoPayBtn" data-toggle="modal" data-uid=51b91d6c762a11e7><img width=160 src="http://localhost:8080/img/pay_with_bitcoin_medium.png"></a>
 	
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -46,6 +49,7 @@
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel">Blockonomics</h4>
+					<p class="modal-desc"></p>
 				</div>
 				<div class="modal-body">
 					<form action='' id="blockoPayBtnForm">
@@ -103,12 +107,12 @@
 		var $ = jQuery.noConflict();
 		var blockoCurrency = '';
 		var blockoAmount = 0;
-		var blockBtcAmount = 0;
+		var blockoBtcAmount = 0;
 		var startTime = '';
 		var paymentMinutes = 10;
 		var uid= '';	
 		var timer;
-		var blockoURL = '/api/button';
+		var blockoURL = 'http://localhost:8080/api/button';
 		var blockoFieldsMaster = {
 			'0': {
 				'id': 'blockoPayBtnnmail',
@@ -116,18 +120,35 @@
 				'label': 'Email',
 				'type': 'email',
 			},
+			
 			'1': {
 				'id': 'blockoPayBtnname',
 				'name': 'name',
 				'label': 'Name',
 				'type': 'text',
 			},
+			
 			'2': {
 				'id': 'blockoPayBtnaddress',
 				'name': 'address',
 				'label': 'Address',
 				'type': 'textarea',
+			},
+			
+			'3': {
+				'id': 'blockoPayBtnQty',
+				'name': 'quantity',
+				'label': 'Quantity',
+				'type': 'number',
+			},
+			
+			'4': {
+				'id': 'blockoPayBtnPhone',
+				'name': 'phone',
+				'label': 'Phone',
+				'type': 'tel',
 			}
+			
 		};
 		(function($) {
 			$(function() {
@@ -183,6 +204,7 @@
 									finalFields.push(blockoFieldsMaster[i]);
 								}
 							};
+							console.log(fieldsMask);
 							
 							var form = $("#blockoPayBtnForm");
 							var responseArea = $("#blockoPayBtnResponse");
@@ -191,7 +213,7 @@
 							if(finalFields.length == 0) {
 								form.html('<div style="text-align:center;margin-bottom:15px;"><img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16"></div>');
 								form.submit();
-								blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
+					blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
 								blockoModal.modal('show');
 								return;
 							}
@@ -199,26 +221,65 @@
 							form.html('');
 							
 							$.each(finalFields, function(index, value) {
-								if(value['type'] != 'textarea') {
-									form.append("<div class='form-group'><input type='" + value['type'] + "' class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></div>");
-								} else {
-									form.append("<div class='form-group'><textarea class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></textarea>");
+								if(value['type'] == 'number') {
+									form.append("<div class='form-group'><label for='blockoPayBtnQty'>Quantity</label><input type='" + value['type'] + "' class='form-control input-sm' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "' value='1' min='1'></div><hr>");
 								}
 							});
 							
+							$.each(finalFields, function(index, value) {
+								if( (value['type'] != 'textarea')  && (value['type'] != 'number')) {
+									form.append("<div class='form-group'><input type='" + value['type'] + "' class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></div>");
+								} else if(value['type'] == 'textarea') {
+									form.append("<div class='form-group'><textarea class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></textarea>");
+								} else {
+									var dummy = 0;
+								}
+							});
+							
+							form.append("<input type='hidden' id='blockoPayBtnUnitPrice' name='uPrice' required value='" + cost + "'>");
+							form.append("<input type='hidden' id='blockoPayBtnCurrency' name='currency' required value='" + currency + "'>");
+							
 							form.append("<div class='form-group centered'><button type='submit' class='btn btn-warning' id='blockoPayBtnSubmit'>Pay <span id='blockoPayBtnCost'>" + cost + "</span> " + currency + "</button></div>");
 							
-							
-							
-							
-							blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
-							
+							blockoModal.find('.modal-title').html(productName);
+							blockoModal.find('.modal-desc').html(productDescription);
 							blockoModal.modal('show');
 						
 						}, error : function(httpReq,status,exception) {
 							
 						}
 					});
+					
+				});
+				
+				$("#blockoPayBtnForm").on('change', function(e) {
+					var form = $(this);
+					var submitBtn = $(form).find('#blockoPayBtnSubmit');
+					var currency = $(form).find('#blockoPayBtnCurrency');
+					currency = currency.val();
+					
+					var qty = $(form).find('#blockoPayBtnQty');
+					if(! qty) {
+						return;
+					}
+					
+					$('#blockoPayBtnQty').parent('.form-group').removeClass('error');
+					$('#blockoPayBtnQty').siblings(".help-block").remove();
+					
+					qty = qty.val();
+					var n = Math.floor(Number(qty));
+					if( ! (String(n) === qty && n > 0) ) {
+						$('#blockoPayBtnQty').parent('.form-group').addClass('error');
+						$('#blockoPayBtnQty').after("<small class='help-block error text-danger'>" + 'Please enter a valid number' + "</small>");
+						return;
+					}
+					
+					var uPrice = $(form).find('#blockoPayBtnUnitPrice');
+					uPrice = uPrice.val();
+					
+					
+					var totalCost = uPrice * qty;
+					submitBtn.html("Pay <span id='blockoPayBtnCost'>" + totalCost + "</span> " + currency);
 					
 				});
 				
@@ -249,14 +310,22 @@
 						if( ( ! value) || (value == '') ) {
 							error = 1;
 							$('#'+id).parent('.form-group').addClass('error');
-							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid input' + "</small>");
-						}
-						
-						if( name == 'emailid' && (validateEmail(value) == false) ) {
+							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid ' + name + "</small>");
+						} else if( name == 'emailid' && (validateEmail(value) == false) ) {
 							error = 1;
 							$('#'+id).parent('.form-group').addClass('error');
 							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid emailid' + "</small>");
+						} else if( name == 'quantity') {
+							var n = Math.floor(Number(value));
+							if( ! (String(n) === value && n > 0) ) {
+								error = 1;
+								$('#'+id).parent('.form-group').addClass('error');
+								$('#'+id).after("<small class='help-block error text-danger'>" + 'Please enter a valid number' + "</small>");
+							}
+						} else {
+							var dummy = 0;
 						}
+						
 					});
 					
 					if(error == 1) {
@@ -269,7 +338,7 @@
 					var methodType = 'POST';
 					
 					$.ajax({
-						url: '/api/merchant_order/' + uid,
+						url: 'http://localhost:8080/api/merchant_order/' + uid,
 						type: methodType,
 						contentType: false,
 						processData: false,
@@ -324,7 +393,7 @@
 					returnArray[formArray[i]['name']] = formArray[i]['value'];
 				}
 				return returnArray;
-			} 
+			}
 
 			function CountDownTimer(dt, id) {
 				var end = new Date(dt);
@@ -354,9 +423,8 @@
 					document.getElementById("prog").style.width = time_percent+"%";
 					
 				}
-
+				clearInterval(timer);
 				timer = setInterval(showRemaining, 1000);
-				
 			}
 			
 			function blockoPayBtnShowSuccess() {
