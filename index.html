@@ -320,13 +320,13 @@
 		});
 	})($);
 
-    function objectifyForm(formArray) {
-      var returnArray = {};
-      for (var i = 0; i < formArray.length; i++){
-      returnArray[formArray[i]['name']] = formArray[i]['value'];
-      }
-      return returnArray;
-    } 
+		function objectifyForm(formArray) {
+			var returnArray = {};
+			for (var i = 0; i < formArray.length; i++){
+				returnArray[formArray[i]['name']] = formArray[i]['value'];
+			}
+			return returnArray;
+		}
 
 		function CountDownTimer(dt, id) {
 			var end = new Date(dt);
@@ -337,14 +337,14 @@
 				if (distance < 0) {
 					clearInterval(timer);
 					$("#prog").css('display', 'none');
-          $("#blockoPaySection").css('display', 'none');
+					$("#blockoPaySection").css('display', 'none');
 					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Payment window expired!  Close this window and try again </div>';
 					return;
 				}
 				
 				minutes =  Math.floor((distance/1000)/60);
-        seconds =  Math.floor(distance/1000)%60;
-        seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
+				seconds =  Math.floor(distance/1000)%60;
+				seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
 				
 				var base_date = startTime;
 				var total_distance = end - base_date;
