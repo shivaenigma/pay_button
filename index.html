@@ -24,16 +24,13 @@
 
 <body>
 	
-	<!-- a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
+	<a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="74d5fffe4ad811e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
 	</a>
 	
 	<a href="#" class="blockoPayBtn" data-toggle="modal" data-uid="fad8a8444d3111e7">
 		<img src="https://pbs.twimg.com/media/B-UEfIjIUAA8kFQ.png:large" width="120">
-	</a -->
-	
-	<a href="" class="blockoPayBtn" data-toggle="modal" data-uid=9523d6c4761511e7><img width=160 src="http://localhost:8080/img/pay_with_bitcoin_medium.png"></a>
-	<a href="" class="blockoPayBtn" data-toggle="modal" data-uid=51b91d6c762a11e7><img width=160 src="http://localhost:8080/img/pay_with_bitcoin_medium.png"></a>
+	</a>
 	
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -49,7 +46,6 @@
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel">Blockonomics</h4>
-					<p class="modal-desc"></p>
 				</div>
 				<div class="modal-body">
 					<form action='' id="blockoPayBtnForm">
@@ -105,335 +101,273 @@
 	
 	<script>
 		var $ = jQuery.noConflict();
-		var blockoCurrency = '';
-		var blockoAmount = 0;
-		var blockoBtcAmount = 0;
-		var startTime = '';
-		var paymentMinutes = 10;
-		var uid= '';	
-		var timer;
-		var blockoURL = 'http://localhost:8080/api/button';
-		var blockoFieldsMaster = {
-			'0': {
-				'id': 'blockoPayBtnnmail',
-				'name': 'emailid',
-				'label': 'Email',
-				'type': 'email',
-			},
-			
-			'1': {
-				'id': 'blockoPayBtnname',
-				'name': 'name',
-				'label': 'Name',
-				'type': 'text',
-			},
-			
-			'2': {
-				'id': 'blockoPayBtnaddress',
-				'name': 'address',
-				'label': 'Address',
-				'type': 'textarea',
-			},
-			
-			'3': {
-				'id': 'blockoPayBtnQty',
-				'name': 'quantity',
-				'label': 'Quantity',
-				'type': 'number',
-			},
-			
-			'4': {
-				'id': 'blockoPayBtnPhone',
-				'name': 'phone',
-				'label': 'Phone',
-				'type': 'tel',
-			}
-			
-		};
 		(function($) {
 			$(function() {
-				$("body").on("click", ".blockoPayBtn", function(e) {
-					e.preventDefault();
-					var button = $(this);
-					uid = button.data('uid').trim();
-					if(uid == '') {
-						alert("Error! Invalid Pay-button configuration. UID missing.");
-					}
+			var blockoCurrency = '';
+			var blockoAmount = 0;
+			var blockBtcAmount = 0;
+			var startTime = '';
+			var paymentMinutes = 10;
+			var uid= '';	
+			var timer;
+			var blockoURL = '/api/button';
+			var blockoFieldsMaster = {
+				'0': {
+					'id': 'blockoPayBtnnmail',
+					'name': 'emailid',
+					'label': 'Email',
+					'type': 'email',
+				},
+				'1': {
+					'id': 'blockoPayBtnname',
+					'name': 'name',
+					'label': 'Name',
+					'type': 'text',
+				},
+				'2': {
+					'id': 'blockoPayBtnaddress',
+					'name': 'address',
+					'label': 'Address',
+					'type': 'textarea',
+				}
+			};
+			
+			$("body").on("click", ".blockoPayBtn", function(e) {
+				e.preventDefault();
+				var button = $(this);
+				uid = button.data('uid').trim();
+				if(uid == '') {
+					alert("Error! Invalid Pay-button configuration. UID missing.");
+				}
+				
+				$('#blockoPayBtnForm').html('');
+				$('#blockoPayBtnForm').css('display', 'block');
+				
+				$('#blockoPayBtnQrCode').html('');
+				$('#blockoPayBtnBTCAmount').html('');
+				$('#blockoPayBtnBTCAddress').val('');
+				$('#seconds-num-container, #minutes-num-container').html('--');
+				$('#prog').css('width', 0);
+				clearTimeout(timer);
+				$('#blockoPayBtnResponse').css('display','none');
+				$('#blockoPayBtnSuccess').css('display','none');
+				$("#prog").css('display', '');
+				$("#blockoPaySection").css('display', '');
+				
+				$.ajax({
+					url: blockoURL,
+					data: {"uid": uid},
+					type: 'GET',
+					crossDomain: true,
+					timeout: 10000,
+					dataType: 'text',
 					
-					$('#blockoPayBtnForm').html('');
-					$('#blockoPayBtnForm').css('display', 'block');
-					
-					$('#blockoPayBtnQrCode').html('');
-					$('#blockoPayBtnBTCAmount').html('');
-					$('#blockoPayBtnBTCAddress').val('');
-					$('#seconds-num-container, #minutes-num-container').html('--');
-					$('#prog').css('width', 0);
-					clearTimeout(timer);
-					$('#blockoPayBtnResponse').css('display','none');
-					$('#blockoPayBtnSuccess').css('display','none');
-					$("#prog").css('display', '');
-					$("#blockoPaySection").css('display', '');
-					
-					$.ajax({
-						url: blockoURL,
-						data: {"uid": uid},
-						type: 'GET',
-						crossDomain: true,
-						timeout: 10000,
-						dataType: 'text',
+					success : function(data){
+						var response = jQuery.parseJSON(data);
 						
-						success : function(data){
-							var response = jQuery.parseJSON(data);
-							
-							var productCode         = response.code;
-							var productName         = response.name;
-							var productDescription  = response.description;
-							var fieldsMask          = response.fields_mask;
-							var currency            = response.currency;
-							var cost                = response.value;
-							var uid                 = response.uid;
-							
-							blockoCurrency = currency;
-							blockoAmount = cost;
-							
-							var finalFields = [];
-							
-							var n = 0;
-							for(i = 0; i < Object.keys(blockoFieldsMaster).length; i++) {
-								if(fieldsMask&(Math.pow(2, i))) {
-									finalFields.push(blockoFieldsMaster[i]);
-								}
-							};
-							console.log(fieldsMask);
-							
-							var form = $("#blockoPayBtnForm");
-							var responseArea = $("#blockoPayBtnResponse");
-							var blockoModal = $("#blockoPayModal");
+						var productCode         = response.code;
+						var productName         = response.name;
+						var productDescription  = response.description;
+						var fieldsMask          = response.fields_mask;
+						var currency            = response.currency;
+						var cost                = response.value;
+						var uid                 = response.uid;
 						
-							if(finalFields.length == 0) {
-								form.html('<div style="text-align:center;margin-bottom:15px;"><img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16"></div>');
-								form.submit();
-					blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
-								blockoModal.modal('show');
-								return;
+						blockoCurrency = currency;
+						blockoAmount = cost;
+						
+						var finalFields = [];
+						
+						var n = 0;
+						for(i = 0; i < Object.keys(blockoFieldsMaster).length; i++) {
+							if(fieldsMask&(Math.pow(2, i))) {
+								finalFields.push(blockoFieldsMaster[i]);
 							}
-							
-							form.html('');
-							
-							$.each(finalFields, function(index, value) {
-								if(value['type'] == 'number') {
-									form.append("<div class='form-group'><label for='blockoPayBtnQty'>Quantity</label><input type='" + value['type'] + "' class='form-control input-sm' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "' value='1' min='1'></div><hr>");
-								}
-							});
-							
-							$.each(finalFields, function(index, value) {
-								if( (value['type'] != 'textarea')  && (value['type'] != 'number')) {
-									form.append("<div class='form-group'><input type='" + value['type'] + "' class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></div>");
-								} else if(value['type'] == 'textarea') {
-									form.append("<div class='form-group'><textarea class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></textarea>");
-								} else {
-									var dummy = 0;
-								}
-							});
-							
-							form.append("<input type='hidden' id='blockoPayBtnUnitPrice' name='uPrice' required value='" + cost + "'>");
-							form.append("<input type='hidden' id='blockoPayBtnCurrency' name='currency' required value='" + currency + "'>");
-							
-							form.append("<div class='form-group centered'><button type='submit' class='btn btn-warning' id='blockoPayBtnSubmit'>Pay <span id='blockoPayBtnCost'>" + cost + "</span> " + currency + "</button></div>");
-							
-							blockoModal.find('.modal-title').html(productName);
-							blockoModal.find('.modal-desc').html(productDescription);
+						};
+						
+						var form = $("#blockoPayBtnForm");
+						var responseArea = $("#blockoPayBtnResponse");
+						var blockoModal = $("#blockoPayModal");
+					
+						if(finalFields.length == 0) {
+							form.html('<div style="text-align:center;margin-bottom:15px;"><img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16"></div>');
+							form.submit();
+				blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
 							blockoModal.modal('show');
-						
-						}, error : function(httpReq,status,exception) {
-							
-						}
-					});
-					
-				});
-				
-				$("#blockoPayBtnForm").on('change', function(e) {
-					var form = $(this);
-					var submitBtn = $(form).find('#blockoPayBtnSubmit');
-					var currency = $(form).find('#blockoPayBtnCurrency');
-					currency = currency.val();
-					
-					var qty = $(form).find('#blockoPayBtnQty');
-					if(! qty) {
-						return;
-					}
-					
-					$('#blockoPayBtnQty').parent('.form-group').removeClass('error');
-					$('#blockoPayBtnQty').siblings(".help-block").remove();
-					
-					qty = qty.val();
-					var n = Math.floor(Number(qty));
-					if( ! (String(n) === qty && n > 0) ) {
-						$('#blockoPayBtnQty').parent('.form-group').addClass('error');
-						$('#blockoPayBtnQty').after("<small class='help-block error text-danger'>" + 'Please enter a valid number' + "</small>");
-						return;
-					}
-					
-					var uPrice = $(form).find('#blockoPayBtnUnitPrice');
-					uPrice = uPrice.val();
-					
-					
-					var totalCost = uPrice * qty;
-					submitBtn.html("Pay <span id='blockoPayBtnCost'>" + totalCost + "</span> " + currency);
-					
-				});
-				
-				$("body").on('submit', '#blockoPayBtnForm', function(e) {
-					$("#blockoPayBtnGeneralError").css('display', 'none');
-					e.preventDefault();
-					
-					var form = $(this);
-					var submitButton = form.find('#blockoPayBtnSubmit');
-					
-					var messageBox = form.find('.blockoPayBtnMessage');
-					messageBox.html('');
-					
-					var origButtonHTML = submitButton.html();
-					submitButton.attr('disabled', 'disabled');
-					submitButton.html('<img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16">');
-					
-					var postData = form.serializeArray();
-					var error = 0;
-					$.each(postData, function(index, value) {
-						
-						var name = value['name'];
-						var value = value['value'].trim();
-						var id = form.find('[name="'+name+'"]').attr('id');
-						$('#'+id).siblings('.help-block').remove();
-						$('#'+id).parent('.form-group').removeClass('error');
-						
-						if( ( ! value) || (value == '') ) {
-							error = 1;
-							$('#'+id).parent('.form-group').addClass('error');
-							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid ' + name + "</small>");
-						} else if( name == 'emailid' && (validateEmail(value) == false) ) {
-							error = 1;
-							$('#'+id).parent('.form-group').addClass('error');
-							$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid emailid' + "</small>");
-						} else if( name == 'quantity') {
-							var n = Math.floor(Number(value));
-							if( ! (String(n) === value && n > 0) ) {
-								error = 1;
-								$('#'+id).parent('.form-group').addClass('error');
-								$('#'+id).after("<small class='help-block error text-danger'>" + 'Please enter a valid number' + "</small>");
-							}
-						} else {
-							var dummy = 0;
+							return;
 						}
 						
-					});
+						form.html('');
+						
+						$.each(finalFields, function(index, value) {
+							if(value['type'] != 'textarea') {
+								form.append("<div class='form-group'><input type='" + value['type'] + "' class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></div>");
+							} else {
+								form.append("<div class='form-group'><textarea class='form-control' id='" + value['id'] + "' name='" + value['name'] + "' required placeholder='" + value['label'] + "'></textarea>");
+							}
+						});
+						
+						form.append("<div class='form-group centered'><button type='submit' class='btn btn-warning' id='blockoPayBtnSubmit'>Pay <span id='blockoPayBtnCost'>" + cost + "</span> " + currency + "</button></div>");
+						
+						
+						
+						
+						blockoModal.find('.modal-title').html(productName + "<small>" + productDescription + "</small>");
+						
+						blockoModal.modal('show');
 					
-					if(error == 1) {
-						submitButton.html(origButtonHTML);
-						submitButton.removeAttr('disabled');
-						return;
+					}, error : function(httpReq,status,exception) {
+						
 					}
-						
-					var formURL = form.attr('action');
-					var methodType = 'POST';
-					
-					$.ajax({
-						url: 'http://localhost:8080/api/merchant_order/' + uid,
-						type: methodType,
-						contentType: false,
-						processData: false,
-						data: JSON.stringify(objectifyForm(postData)),
-						
-						success: function(response, textStatus, jqXHR) {
-							
-							var btcAddress = response.address;
-							var btcAmount = response.satoshi/1.e08;
-							var amount = blockoAmount; 
-							var currency = blockoCurrency;
-							
-							form.css('display', 'none');
-							$('#blockoPayBtnQrCode').qrcode("bitcoin:" + btcAddress +"?amount="+btcAmount);
-							$('#blockoPayBtnQrCode').attr("href", "bitcoin:" + btcAddress +"?amount="+btcAmount);
-							
-							$('#blockoPayBtnCurAmount').html(amount + ' ' + currency);
-							$('#blockoPayBtnBTCEqui').html(btcAmount);
-							$('#blockoPayBtnBTCAmount').html(btcAmount + ' BTC');
-							$('#blockoPayBtnBTCAddress').val(btcAddress);
-							
-							var minutes = paymentMinutes;
-							now = new Date();
-							startTime = now;
-							deadline = now.getTime() + minutes*60000;
-							CountDownTimer(deadline, 'newcountdown');
-							$('#blockoPayBtnResponse').css('display', 'block');
-							function get_ws_url(){
-								var loc = window.location, new_uri;
-								if (loc.protocol === "https:") {
-									new_uri = "wss:";
-								} else {
-									new_uri = "ws:";
-								}
-								new_uri += "//" + loc.host;
-								return new_uri;
-							}
-							
-							var ws = new WebSocket(get_ws_url() + "/payment/" + btcAddress);
-							ws.onmessage = function (evt) {
-								blockoPayBtnShowSuccess();
-							}
-						},
-						error: function(jqXHR, textStatus, errorThrown) {}
-					});
 				});
+				
 			});
 			
-			function objectifyForm(formArray) {
-				var returnArray = {};
-				for (var i = 0; i < formArray.length; i++){
-					returnArray[formArray[i]['name']] = formArray[i]['value'];
-				}
-				return returnArray;
-			}
-
-			function CountDownTimer(dt, id) {
-				var end = new Date(dt);
+			$("body").on('submit', '#blockoPayBtnForm', function(e) {
+				$("#blockoPayBtnGeneralError").css('display', 'none');
+				e.preventDefault();
 				
-				function showRemaining() {
-					var now = new Date();
-					var distance = end - now;
-					if (distance < 0) {
-						clearInterval(timer);
-						$("#prog").css('display', 'none');
-						$("#blockoPaySection").css('display', 'none');
-						document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Payment window expired!  Close this window and try again </div>';
-						return;
+				var form = $(this);
+				var submitButton = form.find('#blockoPayBtnSubmit');
+				
+				var messageBox = form.find('.blockoPayBtnMessage');
+				messageBox.html('');
+				
+				var origButtonHTML = submitButton.html();
+				submitButton.attr('disabled', 'disabled');
+				submitButton.html('<img src="data:image/gif;base64,R0lGODlhEgASAMQaAHl5d66urMXFw3l5dpSUk5WVlKOjoq+vrsbGw6Sko7u7uaWlpbm5t3h4doiIhtLSz4aGhJaWlsbGxNHRzrCwr5SUkqKiobq6uNHRz4eHhf///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAaACwAAAAAEgASAAAFaqAmjmRplstyrkmbrCNFaUZtaFF0HvyhWRZNYVgwBY4BEmFJOB1NlYpJoYBpHI7RZXtZZb4ZEbd7AodFDIYVAjFJJCYA4ISoI0hyuUnAF2geDxoDgwMnfBoYiRgaDQ1WiIqPJBMTkpYaIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo4aRZEoeaxHOiqKFsyBtizopV9ynfwJ0o43MhgNKAYjZbGQJBLXKBLRIK4IaWFbEHgFUoKYoPFKRZUK6fFIORwojBxDytgzpDkdANDc8SQTExp8fBoQEGcDiwNnJA0NLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOmqKQKHmtVzpKksa2FIUiOKIxjHb8B5JgKCAFjgHUMHUkPR6u0WKhwVgx0YQ2ccW6DGCDZjKJiiwWEgCQikRQ6zWpQC+QBviBxuHQEP4EKA0NGhmGGRoVFWaHiGYjEBAuIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6aJJEoiaxIOj6PJsyCpigopmNyff0X0o43AgZJk0mKwSABAK4RhaJ5PqOH7GHAHUQD4ICm0YiKwCSHI7VYoDLwDClBT5Di8khEY+gbUBAQGgWEBRoWFmYEiwRmJBUVLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaO2vOQKImtWDoCgMa2koTCsDZNGuIjpIFwQBIYBahGI2UkORyukUKhyVgz0Yv2csW6thcNBBIVMRikSCRFoaAK8ALpQD+QCHiCZrHQBP4BKBUVGgmGCX6BUQaMBmUkFhYuIQAAIfkEBQoAGgAsAQABABAAEAAABWagJo4aAJAoaZrp6DjaIA/a86BZnmlNo2FADEm3GwWFJAgkNZmQIpHWSCLRFK4FKWKLIHgJUoFYoKlUpCIxabFIKRSohDxButgvJIPeoKFQNHd4JBYWGgeHBxoMDGgBjgFoJI4tIQAAIfkEBQoAGgAsAQABABAAEAAABWSgJo6a45Aoma1ZOkaRxrYAgBZ4oUGQVtckgpBAGhgHqEol1WiQFgvX6PHQJK4JKWaLMXgNWq7GYpGKJhMShZKSSFCH+IGEqCNIgXxAo1BoBIACKHkaF4YXf4JSh4hmIwwMLiEAACH5BAUKABoALAEAAQAQABAAAAVloCaOWhSRKFmsRToui0bMhOY4aKInWlVpmWCGZCgaSMIhyWJJQSAkCsU1AgA0h+yBarUGvgHqYDzQfKmiRoOkUKQeD9RlfiFh7hgSvS6RaPB5JAwMGgiGCBoTE2gCjQJoJI0uIQAAOw==" width="16">');
+				
+				var postData = form.serializeArray();
+				var error = 0;
+				$.each(postData, function(index, value) {
+					
+					var name = value['name'];
+					var value = value['value'].trim();
+					var id = form.find('[name="'+name+'"]').attr('id');
+					$('#'+id).siblings('.help-block').remove();
+					$('#'+id).parent('.form-group').removeClass('error');
+					
+					if( ( ! value) || (value == '') ) {
+						error = 1;
+						$('#'+id).parent('.form-group').addClass('error');
+						$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid input' + "</small>");
 					}
 					
-					minutes =  Math.floor((distance/1000)/60);
-					seconds =  Math.floor(distance/1000)%60;
-					seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
-					
-					var base_date = startTime;
-					var total_distance = end - base_date;
-					var passed_distance = now - base_date;
-					
-					var time_percent = 100 - ((passed_distance/total_distance) * 100);
-					
-					document.getElementById('timeRemainingText').innerHTML = minutes + ":" + seconds;
-					document.getElementById("prog").style.width = time_percent+"%";
-					
+					if( name == 'emailid' && (validateEmail(value) == false) ) {
+						error = 1;
+						$('#'+id).parent('.form-group').addClass('error');
+						$('#'+id).after("<small class='help-block error text-danger'>" + 'Invalid emailid' + "</small>");
+					}
+				});
+				
+				if(error == 1) {
+					submitButton.html(origButtonHTML);
+					submitButton.removeAttr('disabled');
+					return;
 				}
-				clearInterval(timer);
-				timer = setInterval(showRemaining, 1000);
-			}
+					
+				var formURL = form.attr('action');
+				var methodType = 'POST';
+				
+				$.ajax({
+					url: '/api/merchant_order/' + uid,
+					type: methodType,
+					contentType: false,
+					processData: false,
+					data: JSON.stringify(objectifyForm(postData)),
+					
+					success: function(response, textStatus, jqXHR) {
+						
+						var btcAddress = response.address;
+						var btcAmount = response.satoshi/1.e08;
+						var amount = blockoAmount; 
+						var currency = blockoCurrency;
+						
+						form.css('display', 'none');
+						$('#blockoPayBtnQrCode').qrcode("bitcoin:" + btcAddress +"?amount="+btcAmount);
+						$('#blockoPayBtnQrCode').attr("href", "bitcoin:" + btcAddress +"?amount="+btcAmount);
+						
+						$('#blockoPayBtnCurAmount').html(amount + ' ' + currency);
+						$('#blockoPayBtnBTCEqui').html(btcAmount);
+						$('#blockoPayBtnBTCAmount').html(btcAmount + ' BTC');
+						$('#blockoPayBtnBTCAddress').val(btcAddress);
+						
+						var minutes = paymentMinutes;
+						now = new Date();
+						startTime = now;
+						deadline = now.getTime() + minutes*60000;
+						CountDownTimer(deadline, 'newcountdown');
+						$('#blockoPayBtnResponse').css('display', 'block');
+						function get_ws_url(){
+							var loc = window.location, new_uri;
+							if (loc.protocol === "https:") {
+								new_uri = "wss:";
+							} else {
+								new_uri = "ws:";
+							}
+							new_uri += "//" + loc.host;
+							return new_uri;
+						}
+						
+						var ws = new WebSocket(get_ws_url() + "/payment/" + btcAddress);
+						ws.onmessage = function (evt) {
+							blockoPayBtnShowSuccess();
+						}
+					},
+					error: function(jqXHR, textStatus, errorThrown) {}
+				});
+			});
+		});
+	})($);
+
+    function objectifyForm(formArray) {
+      var returnArray = {};
+      for (var i = 0; i < formArray.length; i++){
+      returnArray[formArray[i]['name']] = formArray[i]['value'];
+      }
+      return returnArray;
+    } 
+
+		function CountDownTimer(dt, id) {
+			var end = new Date(dt);
 			
-			function blockoPayBtnShowSuccess() {
-				$('#blockoPayBtnForm').css('display', 'none');
-				clearInterval(timer);
-				$('#blockoPayBtnResponse').css('display','none');
-				$('#blockoPayBtnSuccess').css('display','block');
+			function showRemaining() {
+				var now = new Date();
+				var distance = end - now;
+				if (distance < 0) {
+					clearInterval(timer);
+					$("#prog").css('display', 'none');
+          $("#blockoPaySection").css('display', 'none');
+					document.getElementById("timeRemainingText").innerHTML = '<div class="alert alert-danger">Payment window expired!  Close this window and try again </div>';
+					return;
+				}
+				
+				minutes =  Math.floor((distance/1000)/60);
+        seconds =  Math.floor(distance/1000)%60;
+        seconds = (seconds < 10) ? ("0" + seconds) : seconds;                                                                    
+				
+				var base_date = startTime;
+				var total_distance = end - base_date;
+				var passed_distance = now - base_date;
+				
+				var time_percent = 100 - ((passed_distance/total_distance) * 100);
+				
+				document.getElementById('timeRemainingText').innerHTML = minutes + ":" + seconds;
+				document.getElementById("prog").style.width = time_percent+"%";
+				
 			}
-		})($);
+
+			timer = setInterval(showRemaining, 1000);
+			
+		}
+		
+		function blockoPayBtnShowSuccess() {
+			$('#blockoPayBtnForm').css('display', 'none');
+			clearInterval(timer);
+			$('#blockoPayBtnResponse').css('display','none');
+			$('#blockoPayBtnSuccess').css('display','block');
+		}
+		
 	</script>
 	<script>
 		function validateEmail(email) {
