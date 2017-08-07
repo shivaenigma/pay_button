@@ -2026,7 +2026,10 @@ head.appendChild(style);
 var s = document.createElement("script");
 s.type = "text/javascript";
 s.src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js";
-document.getElementsByTagName('head')[0].appendChild(s);
+var bootstrap3_enabled = (typeof $().emulateTransitionEnd == 'function');
+if( ! bootstrap3_enabled) {
+	document.getElementsByTagName('head')[0].appendChild(s);
+}
 
 // QRCode JS
 var s = document.createElement("script");
